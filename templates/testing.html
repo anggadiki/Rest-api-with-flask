@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        button {
+            margin: 10px 0;
+            padding: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #allSongs,
+        #songById {
+            margin-top: 10px;
+        }
+
+        #allSongs p,
+        #songById p {
+            margin: 5px 0;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>API Test</h1>
+
+    <h2>Get All Popular Songs</h2>
+    <button onclick="getAllSongs()">Get All Songs</button>
+    <div id="allSongs"></div>
+
+    <h2>Get Popular Song by ID</h2>
+    <input type="number" id="songId" placeholder="Enter song ID">
+    <button onclick="getSongById()">Get Song</button>
+    <div id="songById"></div>
+
+    <h2>Add New Popular Song</h2>
+    <input type="text" id="newTitle" placeholder="Enter title">
+    <input type="text" id="newArtist" placeholder="Enter artist">
+    <button onclick="addNewSong()">Add Song</button>
+
+    <h2>Update Popular Song</h2>
+    <input type="number" id="updateId" placeholder="Enter song ID">
+    <input type="text" id="updateTitle" placeholder="Enter new title">
+    <input type="text" id="updateArtist" placeholder="Enter new artist">
+    <button onclick="updateSong()">Update Song</button>
+
+    <h2>Delete Popular Song</h2>
+    <input type="number" id="deleteId" placeholder="Enter song ID">
+    <button onclick="deleteSong()">Delete Song</button>
+
+    <script>
+        function getAllSongs() {
+            fetch('http://127.0.0.1:5000/songs/popular')
+                .then(response => response.json())
+                .then(data => {
+                    const songs = data;
+                    let songsHtml = '';
+                    for (let songId in songs) {
+                        const song = songs[songId];
+                        songsHtml += `<p>ID: ${songId}, Title: ${song.title}, Artist: ${song.artist}</p>`;
+                    }
+                    document.getElementById('allSongs').innerHTML = songsHtml;
+                })
+                .catch(error => console.log(error));
+        }
+
+        function getSongById() {
+            const songId = document.getElementById('songId').value;
+            fetch(`http://127.0.0.1:5000/songs/popular/${songId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const song = data[songId];
+                    const songHtml = `<p>ID: ${song.id}, Title: ${song.title}, Artist: ${song.artist}</p>`;
+                    document.getElementById('songById').innerHTML = songHtml;
+                })
+                .catch(error => console.log(error));
+        }
+
+        function addNewSong() {
+            const title = document.getElementById('newTitle').value;
+            const artist = document.getElementById('newArtist').value;
+            const data = {
+                title: title,
+                artist: artist
+            };
+            fetch('http://127.0.0.1:5000/songs/popular', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.log(error));
+        }
+
+        function updateSong() {
+            const songId = document.getElementById('updateId').value;
+            const title = document.getElementById('updateTitle').value;
+            const artist = document.getElementById('updateArtist').value;
+            const data = {
+                title: title,
+                artist: artist
+            };
+            fetch(`http://127.0.0.1:5000/songs/popular/${songId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.log(error));
+        }
+
+        function deleteSong() {
+            const songId = document.getElementById('deleteId').value;
+            fetch(`http://127.0.0.1:5000/songs/popular/${songId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.log(error));
+        }
+    </script>
+</body>
+
+</html>
