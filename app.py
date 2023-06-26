@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,render_template
 from flask_restful import Api, Resource, reqparse
 from flask_cors import CORS
 import pymysql
@@ -131,6 +131,12 @@ class PopularSong(Resource):
             return {'message': 'Song deleted'}
 
         return {'error': 'Song not found'}, 404
+
+#mencoba unit test Routing
+@app.route('/')
+def home():
+    return render_template('testing.html')
+
 
 # Menambahkan resource ke Api
 api.add_resource(PopularSongs, '/songs/popular')
